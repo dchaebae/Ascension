@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <link rel="stylesheet" type="text/css" href="game.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            const types = 5;
+            const dotRadius = 10;
+            var canvas = document.getElementById("canvas");
+            var ctx = canvas.getContext("2d");
+            var mousepoint = [0,0];
+            var type = 0;
+            var active = false;
+            var objs = [];
+            var vmax = [1, 2, 2, Infinity, Infinity];
+            var omax = [1, 1, 1, Infinity, Infinity];
+            var colors = ["blue", "green", "red", "black", "orange"];
+            for (var i = 0; i < types; i++) objs.push([]);
+            var newObj = [];
+
+            $('#canvas').mousedown(function(e){
+                var point = [e.pageX - this.offsetLeft, e.pageY - this.offsetTop];
+                if(!active) newObj = [];
+                active = true;
+                newObj.push(point);
+                if (newObj.length === vmax[type]) deactivate(type);
+            });
+
+            $('#type').change(function(){
+                if (active) deactivate(type);
+                type = this.value;
+            });
+
+            $('#clear').click(function()
+            {
+                newObj = [];
+                active = false;
+                objs = [];
+                for (var i = 0; i < types; i++) objs.push([]);
+            });
+
+            $('#canvas').mousemove(function(e){
+                mousepoint[0] = e.pageX - this.offsetLeft;
+                mousepoint[1] = e.pageY - this.offsetTop;
+            });
+
+            $('#text').click(function(){
+
+            });
+
+            function deactivate(type)
+            {
+                active = false;
+                var currObjs = objs[type];
+                while(currObjs.length >= omax[type]) currObjs.pop();
+                currObjs.push(newObj);
+                newObj = [];
+            }
+
+            function keyUpHandler(e) {
+                if(e.keyCode === 27) {
+                    if (active) deactivate(type);
+                }
+            }
+
+            function drawObj(type)
+            {
+                var currObjs = objs[type];
+                for (var i = 0; i < currObjs.length; i++)
+                {
+                    var currObj = currObjs[i];
+                    ctx.fillStyle = colors[type];
+                    ctx.strokeStyle = colors[type];
+                    ctx.beginPath();
+                    if (currObj.length === 1)
+                    {
+                        ctx.arc(currObj[0][0], currObj[0][1], dotRadius, 0, Math.PI*2);
+                    }
+                    else
+                    {
+                        ctx.moveTo(currObj[0][0], currObj[0][1]);
+                        for (var j = 1; j < currObj.length; j++)
+                        {
+                            ctx.lineTo(currObj[j][0], currObj[j][1]);
+                        }
+                    }
+                    if (type != 2)
+                    {
+                        ctx.closePath();
+                    }
+                    if (currObj.length === 1 || type === 3) ctx.fill();
+                    else ctx.stroke();
+                }   
+            }
+
+            function drawNewObj(type)
+            {
+                if (newObj.length > 0)
+                {
+                    ctx.beginPath();
+                    ctx.strokeStyle = colors[type];
+                    ctx.moveTo(newObj[0][0], newObj[0][1]);
+                    for (var i = 1; i < newObj.length; i++)
+                    {
+                        ctx.lineTo(newObj[i][0], newObj[i][1]);
+                    }
+                    ctx.lineTo(mousepoint[0], mousepoint[1]);
+                    ctx.stroke();
+                }
+            }
+
+            function draw()
+            {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for(var i = 0; i < types; i++)
+                {
+                    drawNewObj(type);
+                    drawObj(i);
+                }
+            }
+            document.addEventListener("keyup", keyUpHandler, false);
+
+            setInterval(draw, 10);
+        });
+    </script>
+</head>
+<body>
+<p style="padding-bottom:70px"></p>
+<div class = "row">
+    <div class = "col">
+        <canvas id="canvas" width="640px" height="640px"></canvas>
+    </div>
+    <div class = "row">
+        <select id = "type">
+            <option value = "0">Starting Position</option>
+            <option value = "1">Entrance</option>
+            <option value = "2">Exit</option>
+            <option value = "3">Wall</option>
+            <option value = "4">Guard</option>
+        </select>
+        <br><br><br>
+        <button type = "button" id = "clear">Clear</button>
+        <br><br><br>
+        <button type = "button" id = "text">Show Text</button>
+    </div>
+</div>
+</body>
+</html>
