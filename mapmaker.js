@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    const types = 5;
+    const types = 4;
     const dotRadius = 10;
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
@@ -7,8 +7,8 @@ $(document).ready(function(){
     var type = 0;
     var active = false;
     var objs = [];
-    var vmax = [1, 2, 2, Infinity, Infinity];
-    var omax = [1, 1, 1, Infinity, Infinity];
+    var vmax = [1, 2, Infinity, Infinity];
+    var omax = [1, 1, Infinity, Infinity];
     var colors = ["blue", "green", "red", "black", "orange"];
     for (var i = 0; i < types; i++) objs.push([]);
     var newObj = [];
@@ -40,7 +40,8 @@ $(document).ready(function(){
     });
 
     $('#text').click(function(){
-
+        $('#textbox').val('');
+        $('#textbox').val(JSON.stringify(objs));
     });
 
     function deactivate(type)
@@ -67,7 +68,7 @@ $(document).ready(function(){
             ctx.fillStyle = colors[type];
             ctx.strokeStyle = colors[type];
             ctx.beginPath();
-            if (currObj.length === 1)
+            if (type === 0)
             {
                 ctx.arc(currObj[0][0], currObj[0][1], dotRadius, 0, Math.PI*2);
             }
@@ -79,11 +80,8 @@ $(document).ready(function(){
                     ctx.lineTo(currObj[j][0], currObj[j][1]);
                 }
             }
-            if (type != 2)
-            {
-                ctx.closePath();
-            }
-            if (currObj.length === 1 || type === 3) ctx.fill();
+            ctx.closePath();
+            if (type === 0 || type === 3) ctx.fill();
             else ctx.stroke();
         }   
     }
@@ -107,9 +105,9 @@ $(document).ready(function(){
     function draw()
     {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawNewObj(type);
         for(var i = 0; i < types; i++)
         {
-            drawNewObj(type);
             drawObj(i);
         }
     }
