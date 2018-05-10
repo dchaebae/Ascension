@@ -1,34 +1,16 @@
 $(document).ready(function(){
-    var types = ["start", "exit", "walls", "guards"];
+    const types = 4;
     const dotRadius = 10;
-    const stairSize = 50;
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
     var mousepoint = [0,0];
-    var type = "start"; // object type
+    var type = 0;
     var active = false;
     var objs = {};
-    // max number of vertices of that type
-    var vmax = {
-        "start": 1,
-        "exit": 1,
-        "walls": Infinity,
-        "guards": Infinity
-    };
-    // max number of objects of that type
-    var omax = {
-        "start": 1,
-        "exit": 1,
-        "walls": Infinity,
-        "guards": Infinity
-    };
-    var colors = {
-        "start": "blue",
-        "exit": "brown",
-        "walls": "black",
-        "guards": "red"
-    };
-    for (var i = 0; i < types.length; i++) objs[types[i]] = [];
+    var vmax = [1, 2, Infinity, Infinity];
+    var omax = [1, 1, Infinity, Infinity];
+    var colors = ["blue", "green", "red", "black", "orange"];
+    for (var i = 0; i < types; i++) objs.push([]);
     var newObj = [];
 
     $('#canvas').mousedown(function(e){
@@ -48,8 +30,8 @@ $(document).ready(function(){
     {
         newObj = [];
         active = false;
-        objs = {};
-        for (var i = 0; i < types.length; i++) objs[types[i]] = [];
+        objs = [];
+        for (var i = 0; i < types; i++) objs.push([]);
     });
 
     $('#canvas').mousemove(function(e){
@@ -66,10 +48,8 @@ $(document).ready(function(){
     {
         active = false;
         var currObjs = objs[type];
-        if(vmax[type] === 1) {
-            objs[type] = newObj;
-        }
-        else currObjs.push(newObj);
+        while(currObjs.length >= omax[type]) currObjs.pop();
+        currObjs.push(newObj);
         newObj = [];
     }
 
@@ -82,37 +62,27 @@ $(document).ready(function(){
     function drawObj(type)
     {
         var currObjs = objs[type];
-        ctx.fillStyle = colors[type];
-        ctx.strokeStyle = colors[type];
         for (var i = 0; i < currObjs.length; i++)
         {
             var currObj = currObjs[i];
-            if (type === types[0])
+            ctx.fillStyle = colors[type];
+            ctx.strokeStyle = colors[type];
+            ctx.beginPath();
+            if (type === 0)
             {
-                ctx.beginPath();
-                ctx.arc(currObj[0], currObj[1], dotRadius, 0, Math.PI*2);
-                ctx.closePath();
-                ctx.fill();
-            }
-            else if (type === types[1])
-            {
-                var thisX = currObj[0];
-                var thisY = currObj[1];
-                ctx.fillRect(thisX, thisY, stairSize, stairSize);
+                ctx.arc(currObj[0][0], currObj[0][1], dotRadius, 0, Math.PI*2);
             }
             else
             {
-                ctx.beginPath();
                 ctx.moveTo(currObj[0][0], currObj[0][1]);
                 for (var j = 1; j < currObj.length; j++)
                 {
                     ctx.lineTo(currObj[j][0], currObj[j][1]);
                 }
-                ctx.closePath();
-                if (type != types[3]) ctx.fill();
-                else ctx.stroke();
             }
-
+            ctx.closePath();
+            if (type === 0 || type === 3) ctx.fill();
+            else ctx.stroke();
         }   
     }
 
@@ -136,9 +106,9 @@ $(document).ready(function(){
     {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawNewObj(type);
-        for(var i = 0; i < types.length; i++)
+        for(var i = 0; i < types; i++)
         {
-            drawObj(types[i]);
+            drawObj(i);
         }
     }
     document.addEventListener("keyup", keyUpHandler, false);
