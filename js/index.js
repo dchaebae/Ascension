@@ -6,7 +6,7 @@ $(document).ready(function(){
     var objs = [];
     var colors = ["blue", "green", "red", "black", "orange"];
     for (var i = 0; i < types; i++) objs.push([]);
-
+        
     function drawObj(type)
     {
         var currObjs = objs[type];

@@ -1,15 +1,16 @@
 $(document).ready(function(){
     const types = 4;
     const dotRadius = 10;
+    const stairSize = 50;
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
     var mousepoint = [0,0];
     var type = 0;
     var active = false;
     var objs = [];
-    var vmax = [1, 2, Infinity, Infinity];
+    var vmax = [1, 1, Infinity, Infinity];
     var omax = [1, 1, Infinity, Infinity];
-    var colors = ["blue", "green", "red", "black", "orange"];
+    var colors = ["blue", "brown", "black", "red"];
     for (var i = 0; i < types; i++) objs.push([]);
     var newObj = [];
 
@@ -67,10 +68,18 @@ $(document).ready(function(){
             var currObj = currObjs[i];
             ctx.fillStyle = colors[type];
             ctx.strokeStyle = colors[type];
-            ctx.beginPath();
             if (type === 0)
             {
+                ctx.beginPath();
                 ctx.arc(currObj[0][0], currObj[0][1], dotRadius, 0, Math.PI*2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            else if (type === 1)
+            {
+                var thisX = currObj[0][0];
+                var thisY = currObj[0][1];
+                ctx.fillRect(thisX, thisY, stairSize, stairSize);
             }
             else
             {
@@ -79,10 +88,11 @@ $(document).ready(function(){
                 {
                     ctx.lineTo(currObj[j][0], currObj[j][1]);
                 }
+                ctx.closePath();
+                if (type != 3) ctx.fill();
+                else ctx.stroke();
             }
-            ctx.closePath();
-            if (type === 0 || type === 3) ctx.fill();
-            else ctx.stroke();
+
         }   
     }
 
