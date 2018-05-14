@@ -159,18 +159,3 @@ function updateGameArea(coordinates) {
 
 	lazuli.update();
 }
-
-
-
-
-    /*function draw()
-    {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // draw the walls again
-        // temporarily get the walls from map 0
-	    
-
-
-    }*/
-
