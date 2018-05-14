@@ -28,6 +28,9 @@ var gameArea = {
 	// define where the exit is
 	exit: [],
 
+	//d
+	guards:[],
+
 	// start off and draw for every 10 milliseconds
 	start : function() {
 		this.exit = data[0].exit[0]; // default start at map 0
@@ -46,6 +49,14 @@ var gameArea = {
         window.addEventListener('keyup', function (e) {
             gameArea.keys[e.keyCode] = (e.type == "keydown");            
         })
+
+            var pos1 = new THREE.Vector2(50, 50);
+	    var pos2 = new THREE.Vector2(300, 50);
+	    var pos3 = new THREE.Vector2(300, 300);
+	    var pos4 = new THREE.Vector2(50, 300);
+	    var patrol = [pos1, pos2, pos3, pos4];
+	    var guard = new Guard(patrol, 2, 100, 1, Math.PI / 2, 100);
+	    this.guards[0] = guard;
 	},
 
 	// a clear function to reset
@@ -150,6 +161,15 @@ function checkWallCollision(axis, dir) {
 function updateGameArea(coordinates) {
 	gameArea.clear();
 	drawEnvironment();
+
+	var ctx = gameArea.canvas.getContext("2d");
+    gameArea.guards[0].show(ctx);
+    gameArea.guards[0].move();
+    var walls = data[0].walls;
+    if (gameArea.guards[0].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls))
+    {
+    	console.log("CAUGHT!");
+    }
 
 	// if key is pressed, update the position of the player
 	if (gameArea.keys && gameArea.keys[87]) {if (checkWallCollision("y", -1)) {lazuli.y -= lazuli.speed}};

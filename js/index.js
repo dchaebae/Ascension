@@ -3,11 +3,17 @@ $(document).ready(function(){
     const dotRadius = 10;
     var canvas = document.getElementById("canvas");
     var ctx = canvas.getContext("2d");
-    var objs = [];
-    var colors = ["blue", "green", "red", "black", "orange"];
-    for (var i = 0; i < types; i++) objs.push([]);
+    var pos1 = new THREE.Vector2(50, 50);
+    var pos2 = new THREE.Vector2(300, 50);
+    var pos3 = new THREE.Vector2(300, 300);
+    var pos4 = new THREE.Vector2(50, 300);
+    var patrol = [pos1, pos2, pos3, pos4];
+    var guard = new Guard(patrol, 2, 100, 1, Math.PI / 2, 100);
+    //var objs = [];
+    //var colors = ["blue", "green", "red", "black", "orange"];
+    //for (var i = 0; i < types; i++) objs.push([]);
         
-    function drawObj(type)
+    /* function drawObj(type)
     {
         var currObjs = objs[type];
         for (var i = 0; i < currObjs.length; i++)
@@ -32,15 +38,13 @@ $(document).ready(function(){
             if (type === 0 || type === 3) ctx.fill();
             else ctx.stroke();
         }   
-    }
+    }*/
 
     function draw()
     {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for(var i = 0; i < types; i++)
-        {
-            drawObj(i);
-        }
+        guard.show(ctx);
+        guard.move();
     }
 
     setInterval(draw, 10);
