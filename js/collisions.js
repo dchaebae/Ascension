@@ -111,6 +111,7 @@ function drawEnvironment() {
 }
 
 // check to see if the player will be moving into a wall
+// return true if 
 function checkWallCollision(axis, dir) {
 	var q = {};
 	if (axis === "x" && dir > 0)
