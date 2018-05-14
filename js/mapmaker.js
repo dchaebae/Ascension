@@ -1,3 +1,5 @@
+'use strict';
+
 $(document).ready(function(){
     var types = ["start", "exit", "walls", "guards"];
     const dotRadius = 10;
@@ -58,8 +60,10 @@ $(document).ready(function(){
     });
 
     $('#text').click(function(){
+
         $('#textbox').val('');
-        $('#textbox').val(JSON.stringify(objs));
+        var data = JSON.stringify(objs)
+        $('#textbox').val(data);
     });
 
     function deactivate(type)

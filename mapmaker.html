@@ -25,7 +25,28 @@
         <br><br><br>
         <button type = "button" id = "text">Show Text</button>
         <br><br><br>
-        <textarea rows="30" cols="75" id="textbox"></textarea>
+        <form id = "myForm" onsubmit="download">
+          <p>File Name <input type="text" name="name" value="map.txt"></p>
+            <br>
+          <textarea name="text" id="textbox"rows="20" cols="50"></textarea><br>
+          <input type="submit" value="Download">
+        </form>
+        <script>
+        document.getElementById("myForm").onsubmit = function() {download(this['name'].value, this['text'].value)};
+
+        function download(filename, text) {
+          var element = document.createElement('a');
+          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+          element.setAttribute('download', filename);
+
+          element.style.display = 'none';
+          document.body.appendChild(element);
+
+          element.click();
+
+          document.body.removeChild(element);
+        }
+        </script>
     </div>
 </div>
 </body>
