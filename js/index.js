@@ -165,7 +165,9 @@ function reachExit() {
             for (var j = 0; j < patrolPosList.length; j++) {
                 patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
             }
-            var guard = new Guard(patrol, 2, 100, 1, Math.PI/2, 100);
+            var speed = 2;
+            if (gameArea.convList.length > 0) speed = 2 + gameArea.convList.length*2.5;
+            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, 100);
             gameArea.guards.push(guard);
         }
 
@@ -190,16 +192,14 @@ function updateGameArea(coordinates) {
 
     lazuli.update();
 
-    // select which map
-    var gameMap = 0;
     // change the speed based on the map
-    if (gameMap >= 1) lazuli.speed = 4.5;
-    else lazuli.speed = 2;
+    lazuli.speed = 2;
+    if (gameArea.convList.length > 0) lazuli.speed = 2 + gameArea.convList.length*2.5;
 
     // apply convolution(s) to the canvas map
     imageData = gameArea.ctx.getImageData(0, 0, gameArea.canvas.width, gameArea.canvas.height);
     imageData2 = gameArea.ctx.getImageData(0, 0, gameArea.canvas.width, gameArea.canvas.height);
-    var newImage = applyConvolutions(imageData, gameMap, imageData2, lazuli);
+    var newImage = applyConvolutions(imageData, gameArea.convList, imageData2, lazuli);
     gameArea.ctx.putImageData(newImage, 0, 0);
 
     reachExit(); // check if player is at the exit
