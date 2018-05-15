@@ -28,9 +28,31 @@ var gameArea = {
     // define where the exit is
     exit: [],
 
+    // define how big the exit is
+    exitSize: 50,
+
+    // a list of guards
+    guards: [],
+
+    // keep track of what level we are on, start off level 0
+    level: 0,
+
     // start off and draw for every 10 milliseconds
     start : function() {
-        this.exit = data[0].exit[0]; // default start at map 0
+        var dataDef = data[0];
+        // the exit of the starting map, 0
+        this.exit = dataDef.exit[0];
+
+        // list of the guards of the starting map, 0
+        for (var i = 0; i < dataDef.guards.length; i++) {
+            var patrol = [];
+            var patrolPosList = dataDef.guards[i];
+            for (var j = 0; j < patrolPosList.length; j++) {
+                patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
+            }
+            var guard = new Guard(patrol, 2, 100, 1, Math.PI/2, 100);
+            this.guards.push(guard);
+        }
 
         this.canvas.width = 640;
         this.canvas.height = 640;
@@ -75,7 +97,7 @@ function component(coordinates) {
 // draw all the necessary environment
 function drawEnvironment() {
     /*=====================Draw the walls======================*/
-    var walls = data[0].walls; // temporarily get from map 0
+    var walls = data[gameArea.level].walls;
     var ctx = gameArea.ctx;
 
     // draw a white background
@@ -98,9 +120,56 @@ function drawEnvironment() {
     ctx.fill();
 
     /*=====================Draw the exit======================*/
-    const stairSize = 50;
     ctx.fillStyle = gameArea.colors.exit;
-    ctx.fillRect(gameArea.exit[0], gameArea.exit[1], stairSize, stairSize);
+    ctx.fillRect(gameArea.exit[0], gameArea.exit[1], gameArea.exitSize, gameArea.exitSize);
+}
+
+// draw all the guards
+function drawGuards() {
+    var walls = data[gameArea.level].walls;
+    for (var i = 0; i < gameArea.guards.length; i++) {
+        gameArea.guards[i].show(gameArea.ctx);
+        gameArea.guards[i].move();
+
+        if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls)) {
+            console.log("CAUGHT!");
+        }
+    }
+}
+
+// handle when the player reaches the exit
+function reachExit() {
+    var x = lazuli.x;
+    var y = lazuli.y;
+    var xBound = gameArea.exit[0];
+    var yBound = gameArea.exit[1];
+
+    // if true, we have reached the exit
+    if (x >= xBound && x <= xBound+gameArea.exitSize && y >= yBound && y <= yBound+gameArea.exitSize) {
+        gameArea.level += 1; // we go onto next level
+        if (gameArea.level >= data.length)
+            gameArea.level = 0;
+
+        var newData = data[gameArea.level];
+        lazuli = new component(newData.start[0]); // player position reset
+        gameArea.exit = newData.exit[0]; // reset the exit
+
+        // reset list of guards
+        gameArea.guards = [];
+        for (var i = 0; i < newData.guards.length; i++) {
+            var patrol = [];
+            var patrolPosList = newData.guards[i];
+            for (var j = 0; j < patrolPosList.length; j++) {
+                patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
+            }
+            var guard = new Guard(patrol, 2, 100, 1, Math.PI/2, 100);
+            gameArea.guards.push(guard);
+        }
+
+        gameArea.clear();
+        drawEnvironment();
+        drawGuards();
+    }
 
 }
 
@@ -108,12 +177,13 @@ function drawEnvironment() {
 function updateGameArea(coordinates) {
     gameArea.clear();
     drawEnvironment();
+    drawGuards();
 
     // if key is pressed, update the position of the player
-    if (gameArea.keys && gameArea.keys[87]) {if (checkWallCollision("y", -1)) {lazuli.y -= lazuli.speed}};
-    if (gameArea.keys && gameArea.keys[65]) {if (checkWallCollision("x", -1)) {lazuli.x -= lazuli.speed}};
-    if (gameArea.keys && gameArea.keys[83]) {if (checkWallCollision("y", 1)) {lazuli.y += lazuli.speed}};
-    if (gameArea.keys && gameArea.keys[68]) {if (checkWallCollision("x", 1)) {lazuli.x += lazuli.speed}};
+    if (gameArea.keys && gameArea.keys[87]) {if (checkWallCollision("y", -1, gameArea.level)) {lazuli.y -= lazuli.speed}};
+    if (gameArea.keys && gameArea.keys[65]) {if (checkWallCollision("x", -1, gameArea.level)) {lazuli.x -= lazuli.speed}};
+    if (gameArea.keys && gameArea.keys[83]) {if (checkWallCollision("y", 1, gameArea.level)) {lazuli.y += lazuli.speed}};
+    if (gameArea.keys && gameArea.keys[68]) {if (checkWallCollision("x", 1, gameArea.level)) {lazuli.x += lazuli.speed}};
 
     lazuli.update();
 
@@ -128,4 +198,6 @@ function updateGameArea(coordinates) {
     imageData2 = gameArea.ctx.getImageData(0, 0, gameArea.canvas.width, gameArea.canvas.height);
     var newImage = applyConvolutions(imageData, gameMap, imageData2, lazuli);
     gameArea.ctx.putImageData(newImage, 0, 0);
+
+    reachExit(); // check if player is at the exit
 }
