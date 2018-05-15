@@ -1,6 +1,7 @@
 const size = 10;
 const color = "red";
 const visionColor = "yellow";
+const nrays = 2;
 class Guard
 {
 	/*
@@ -170,7 +171,6 @@ class Guard
 
 	adjustVision(a, b, c, walls, rays)
 	{
-		console.log(walls);
 		var vec = (new THREE.Vector2()).subVectors(c, b);
 		vec = vec.divideScalar(rays-1);
 		var points = [];
@@ -196,10 +196,10 @@ class Guard
 					var det = A1 * B2 - A2 * B1;
 					if (det != 0)
 					{
-						var x = (B2 * C1 - B1 * C2) / det;
-						var y = (A1 * C2 - A2 * C1) / det;
-						if (Math.min(a.x, d.x) < x && Math.max(a.x, d.x) > x && Math.min(a.y, d.y) < y && Math.max(a.y, d.y) > y && 
-							Math.min(wall[n][0], wall[k][0]) < x && Math.max(wall[n][0], wall[k][0]) > x && Math.min(wall[n][1], wall[k][1]) < y && Math.max(wall[n][1], wall[k][1]) > y)
+						var x = Math.round((B2 * C1 - B1 * C2) / det);
+						var y = Math.round((A1 * C2 - A2 * C1) / det);
+						if (Math.min(a.x, d.x) <= x && Math.max(a.x, d.x) >= x && Math.min(a.y, d.y) <= y && Math.max(a.y, d.y) >= y && 
+							Math.min(wall[n][0], wall[k][0]) <= x && Math.max(wall[n][0], wall[k][0]) >= x && Math.min(wall[n][1], wall[k][1]) <= y && Math.max(wall[n][1], wall[k][1]) >= y)
 						{
 							d = new THREE.Vector2(x, y);
 						}
@@ -223,8 +223,8 @@ class Guard
    		var straight = (new THREE.Vector2()).copy(this.sightDirection).multiplyScalar(this.sightRange);
    		var up = this.rotateAround(straight, locate, this.sightRange/2);
    		var down = this.rotateAround(straight, locate, -this.sightRange/2);
-   		var verts = this.adjustVision(locate, up, down, walls, 20);
-   		for (var i = 0; i < 20; i++)
+   		var verts = this.adjustVision(locate, up, down, walls, nrays);
+   		for (var i = 0; i < nrays; i++)
    		{
    			ctx.lineTo(verts[i].x, verts[i].y);
    		}
