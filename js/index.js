@@ -118,7 +118,7 @@ function updateGameArea(coordinates) {
     lazuli.update();
 
     // select which map
-    var gameMap = 10;
+    var gameMap = 0;
     // change the speed based on the map
     if (gameMap >= 1) lazuli.speed = 4.5;
     else lazuli.speed = 2;
