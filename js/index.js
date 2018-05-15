@@ -3,7 +3,7 @@ var lazuli;
 
 function startGame() {
     lazuli = new component(data[0].start[0]); // for now, get the first starting point
-
+//    document.body.style.backgroundImage = "url('spiral.jpg')";
     // add the title to the game
     var title = document.createElement("h1");
     title.textContent = "Ascension";

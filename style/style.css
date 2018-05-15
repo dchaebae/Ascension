@@ -1,5 +1,12 @@
-#type {
-	
+body {
+	background-image: url('../spiral.jpg');
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: center;
+}
+
+h1 {
+	font-size: 3vw;
 }
 
 canvas { 
