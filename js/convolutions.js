@@ -241,26 +241,29 @@ function followVignetteCanvas(image, player) {
 /*=====================Call from Index========================*/
 /*============================================================*/
 // add some convolution, depending on the number passed (not yet complete)
-function applyConvolutions(image, num, imageCopy, player) {
+function applyConvolutions(image, convList, imageCopy, player) {
 	var newImage = image;
-	if (num === 1)
-		newImage = grayscaleCanvas(newImage);
-	if (num === 2)
-		newImage = rotateCanvas(newImage, imageCopy, Math.PI*1/2.);
-	if (num === 3)
-		newImage = rotateCanvas(newImage, imageCopy, Math.PI);
-	if (num === 4)
-		newImage = rotateCanvas(newImage, imageCopy, Math.PI*3/2.);
-	if (num === 5)
-		newImage = swirlCanvas(newImage, imageCopy, Math.PI*1/2.);
-	if (num === 6)
-		newImage = brightCanvas(newImage);
-	if (num === 7)
-		newImage = contrastCanvas(newImage);
-	if (num === 8)
-		newImage = vignetteCanvas(newImage);
-	if (num === 9)
-		newImage = followVignetteCanvas(newImage, player);
+  for (var i = 0; i < convList.length; i++) {
+    var num = convList[i];
+  	if (num === 1)
+  		newImage = grayscaleCanvas(newImage);
+  	if (num === 2)
+  		newImage = rotateCanvas(newImage, imageCopy, Math.PI*1/2.);
+  	if (num === 3)
+  		newImage = rotateCanvas(newImage, imageCopy, Math.PI);
+  	if (num === 4)
+  		newImage = rotateCanvas(newImage, imageCopy, Math.PI*3/2.);
+  	if (num === 5)
+  		newImage = swirlCanvas(newImage, imageCopy, Math.PI*1/2.);
+  	if (num === 6)
+  		newImage = brightCanvas(newImage);
+  	if (num === 7)
+  		newImage = contrastCanvas(newImage);
+  	if (num === 8)
+  		newImage = vignetteCanvas(newImage);
+  	if (num === 9)
+  		newImage = followVignetteCanvas(newImage, player);
+  }
 
 	return newImage;
 }
