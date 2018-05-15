@@ -151,7 +151,7 @@ function brightCanvas( image ) {
 
 function contrastCanvas(image) {
 	// Reference: https://en.wikipedia.org/wiki/Image_editing#Contrast_change_and_brightening
-	var ratio = -0.93 // ratio set to -0.93
+	var ratio = -0.98 // ratio set to -0.98
   	var contrastGIMP = Math.tan((ratio+1) * Math.PI / 4);
   	for (var y = 0; y < image.height; y++) {
     	for (var x = 0; x < image.width; x++) {
@@ -204,8 +204,8 @@ function vignetteCanvas(image) {
 
 // add a vignette to the canvas
 function followVignetteCanvas(image, player) {
-	var innerR = 0.1;
-	var outerR = 0.3;
+	var innerR = 0.05;
+	var outerR = 0.2;
 	var centerX = image.width / 2;
   	// hold onto the center of the image (y)
   	var centerY = image.width / 2;
