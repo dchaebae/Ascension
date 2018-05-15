@@ -127,6 +127,49 @@ function drawEnvironment() {
     ctx.fillRect(gameArea.exit[0], gameArea.exit[1], gameArea.exitSize, gameArea.exitSize);
 }
 
+// makes all the canvas texts on title page
+function makeTitlePage() {
+    var ctx = gameArea.ctx;
+    var canvas = gameArea.canvas;
+    
+    // make a gradient for the title
+    var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    gradient.addColorStop(0, 'red');
+    gradient.addColorStop(0.35, 'red');
+    gradient.addColorStop(0.65, 'yellow');
+    gradient.addColorStop(0.7, 'red');
+    gradient.addColorStop(1, 'yellow');
+    ctx.font = "2.8vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = gradient;
+    ctx.textAlign = "center";
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 2;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillText("Ascension", canvas.width/2, 80);
+
+    // write in the start
+    ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillText("<<< Enter to Start!", 280, 350);
+
+    // keyboards
+    ctx.fillStyle = "#aaa";
+    ctx.fillRect(100, 470, 50, 50);
+    ctx.fillRect(40, 530, 50, 50);
+    ctx.fillRect(100, 530, 50, 50);
+    ctx.fillRect(160, 530, 50, 50);
+    ctx.fillStyle = "black";
+    ctx.fillText("W", 125, 500);
+    ctx.fillText("A", 65, 560);
+    ctx.fillText("S", 125, 560);
+    ctx.fillText("D", 185, 560);
+
+    // write in the guard warning
+    ctx.fillStyle = gradient;
+    ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillText("Avoid Guards", 450, 430);
+}
+
 // draw all the guards
 function drawGuards() {
     var walls = data[gameArea.level].walls;
@@ -181,8 +224,16 @@ function reachExit() {
 // update everything necessary
 function updateGameArea(coordinates) {
     gameArea.clear();
+    if (gameArea.level === 0) {
+        gameArea.ctx.fillStyle = "#444";
+        gameArea.ctx.fillRect(0, 0, gameArea.canvas.width, gameArea.canvas.height);
+    }
     drawEnvironment();
     drawGuards();
+    // draw in the title page if on title page
+    if (gameArea.level === 0) {
+        makeTitlePage();
+    }
 
     // if key is pressed, update the position of the player
     if (gameArea.keys && gameArea.keys[87]) {if (checkWallCollision("y", -1, gameArea.level)) {lazuli.y -= lazuli.speed}};
