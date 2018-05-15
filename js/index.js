@@ -131,7 +131,7 @@ function drawEnvironment() {
 function drawGuards() {
     var walls = data[gameArea.level].walls;
     for (var i = 0; i < gameArea.guards.length; i++) {
-        gameArea.guards[i].show(gameArea.ctx);
+        gameArea.guards[i].show(gameArea.ctx, walls);
         gameArea.guards[i].move();
 
         if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls)) {

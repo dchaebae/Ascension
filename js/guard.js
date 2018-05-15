@@ -170,37 +170,71 @@ class Guard
 
 	adjustVision(a, b, c, walls, rays)
 	{
+		console.log(walls);
 		var vec = (new THREE.Vector2()).subVectors(c, b);
-		var interval = vec.length() / rays;
-		vec = vec.normalize();
+		vec = vec.divideScalar(rays-1);
 		var points = [];
-		points.push(b);
-		for (var i = 0; i < rays-2; i++)
+		var champ;
+		for (var i = 0; i < rays; i++)
 		{
+			var vecCopy = (new THREE.Vector2()).copy(vec);
+			var d = (new THREE.Vector2()).addVectors(b, vecCopy.multiplyScalar(i));
+			for (var j = 0; j < walls.length; j++)
+			{
+				var wall = walls[j];
+				for(var k = 0, n = 1; k < wall.length; k++, n++)
+				{
+					if (n === wall.length) n = 0;
+					var A1 = d.y - a.y;
+					var B1 = a.x - d.x;
+					var C1 = A1 * a.x + B1 * a.y;
+
+					var A2 = wall[n][1] - wall[k][1];
+					var B2 = wall[k][0] - wall[n][0];
+					var C2 = A2 * wall[k][0] + B2 * wall[k][1];
+
+					var det = A1 * B2 - A2 * B1;
+					if (det != 0)
+					{
+						var x = (B2 * C1 - B1 * C2) / det;
+						var y = (A1 * C2 - A2 * C1) / det;
+						if (Math.min(a.x, d.x) < x && Math.max(a.x, d.x) > x && Math.min(a.y, d.y) < y && Math.max(a.y, d.y) > y && 
+							Math.min(wall[n][0], wall[k][0]) < x && Math.max(wall[n][0], wall[k][0]) > x && Math.min(wall[n][1], wall[k][1]) < y && Math.max(wall[n][1], wall[k][1]) > y)
+						{
+							d = new THREE.Vector2(x, y);
+						}
+					}
+				}
+			}
+			points.push(d);
 		}
-		points.push(c);
+
+		return points;
 	}
 
 	show(ctx, walls)
 	{
+		var locate = (new THREE.Vector2().copy(this.location));
 		// draw his vision
    		ctx.beginPath();
    		ctx.fillStyle = visionColor;
-   		ctx.moveTo(this.location.x, this.location.y);
+   		ctx.moveTo(locate.x, locate.y);
 
    		var straight = (new THREE.Vector2()).copy(this.sightDirection).multiplyScalar(this.sightRange);
-   		var up = this.rotateAround(straight, this.location, this.sightRange/2);
-   		var down = this.rotateAround(straight, this.location, -this.sightRange/2);
-   		var verts = this.adjustVision(this.location, up, down, walls, 10);
-   		ctx.lineTo(up.x, up.y);
-		ctx.lineTo(down.x, down.y);
+   		var up = this.rotateAround(straight, locate, this.sightRange/2);
+   		var down = this.rotateAround(straight, locate, -this.sightRange/2);
+   		var verts = this.adjustVision(locate, up, down, walls, 20);
+   		for (var i = 0; i < 20; i++)
+   		{
+   			ctx.lineTo(verts[i].x, verts[i].y);
+   		}
    		ctx.closePath();
    		ctx.fill();
 
 		// draw the guard
 		ctx.beginPath();
 		ctx.fillStyle = color;
-        ctx.arc(this.location.x, this.location.y, size, 0, Math.PI*2);
+        ctx.arc(locate.x, locate.y, size, 0, Math.PI*2);
         ctx.closePath();
         ctx.fill();
 	}
