@@ -1,7 +1,7 @@
 const size = 10;
 const color = "red";
 const visionColor = "yellow";
-const nrays = 2;
+const nrays = 10;
 class Guard
 {
 	/*
