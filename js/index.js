@@ -37,6 +37,9 @@ var gameArea = {
     // keep track of what level we are on, start off level 0
     level: 0,
 
+    // decide which convolution to apply
+    convList: [],
+
     // start off and draw for every 10 milliseconds
     start : function() {
         var dataDef = data[0];
