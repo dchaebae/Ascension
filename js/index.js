@@ -53,11 +53,7 @@ var gameArea = {
             for (var j = 0; j < patrolPosList.length; j++) {
                 patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
             }
-            var speed = 2;
-            var waitTime = 100;
-            if (gameArea.convList.includes(5)) speed = 4 + gameArea.convList.length * 2.5;
-            else if (gameArea.convList.length > 0) speed = 2 + gameArea.convList.length*2.5;
-            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, Math.round(200 / speed));
+            var guard = new Guard(patrol, 2, 100, 1, Math.PI/2, 100);
             this.guards.push(guard);
         }
 
@@ -182,7 +178,7 @@ function drawGuards() {
         gameArea.guards[i].move();
 
         if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls)) {
-            lazuli = new component(data[this.gameArea.level].start[0]); // player position reset
+            console.log("CAUGHT!");
         }
     }
 }
@@ -213,9 +209,8 @@ function reachExit() {
                 patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
             }
             var speed = 2;
-            if (gameArea.convList.includes(5)) speed = 4 + gameArea.convList.length * 2.5;
-            else if (gameArea.convList.length > 0) speed = 2 + gameArea.convList.length*2.5;
-            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, Math.round(200 / speed));
+            if (gameArea.convList.length > 0) speed = 2 + gameArea.convList.length*2.5;
+            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, 100);
             gameArea.guards.push(guard);
         }
 
@@ -250,7 +245,6 @@ function updateGameArea(coordinates) {
 
     // change the speed based on the map
     lazuli.speed = 2;
-    if (gameArea.convList.includes(5)) lazuli.speed = 5 + gameArea.convList.length*2.5
     if (gameArea.convList.length > 0) lazuli.speed = 2 + gameArea.convList.length*2.5;
 
     // apply convolution(s) to the canvas map
