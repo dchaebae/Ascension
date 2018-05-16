@@ -1,15 +1,7 @@
 // check to see if the player will be moving into a wall
 // return true if 
-function checkWallCollision(axis, dir, level) {
-	var q = {};
-	if (axis === "x" && dir > 0)
-		q = {"x" : lazuli.x + lazuli.speed, "y" : lazuli.y}; 
-	else if (axis === "x")
-		q = {"x" : lazuli.x - lazuli.speed, "y" : lazuli.y}; 
-	else if (axis === "y" && dir > 0)
-		q = {"x" : lazuli.x, "y" : lazuli.y + lazuli.speed}; 
-	else
-		q = {"x" : lazuli.x, "y" : lazuli.y - lazuli.speed}; 
+function checkWallCollision(location, level) {
+	var q = {"x": location.x, "y": location.y};
 
 	// check the boundaries
 	if (q.x < lazuli.radius || q.y < lazuli.radius)
@@ -39,9 +31,9 @@ function checkWallCollision(axis, dir, level) {
 		    var qProj = {"x" : p1.x + t * (p2.x - p1.x), "y" : p1.y + t * (p2.y - p1.y)};
 		    var dist = Math.sqrt((q.x - qProj.x)*(q.x - qProj.x) + (q.y - qProj.y) * (q.y - qProj.y));
 		    // if the distance is less, then it is within the wall, so not valid
-		    if (dist < lazuli.radius) return false;
+		    if (dist < lazuli.radius) return [i, j];
 		}
 	}
 
-	return true;
+	return -1;
 }

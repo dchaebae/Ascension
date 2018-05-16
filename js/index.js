@@ -19,7 +19,8 @@ var gameArea = {
 
     // a list of colors for accessing
     colors : {
-        "start": "blue",
+        "start": "green",
+        "inactive": "blue",
         "exit": "brown",
         "walls": "#ffd27f",
         "guards": "red",
@@ -35,7 +36,11 @@ var gameArea = {
     // a list of guards
     guards: [],
     
+    // a list of death locations
     deaths: [],
+    
+    // a list of cooldowns: 0 -> blink, 1 -> stun
+    cooldowns: [0, 0],
 
     // keep track of what level we are on, start off level 0
     level: 0,
@@ -92,7 +97,8 @@ function component(coordinates) {
     // update the drawing of the player
     this.update = function() {
         ctx = gameArea.ctx;
-        ctx.fillStyle = gameArea.colors.start;
+        if (gameArea.cooldowns[0] <= 0) ctx.fillStyle = gameArea.colors.start;
+        else ctx.fillStyle = gameArea.colors.inactive;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
         ctx.closePath();
@@ -128,9 +134,10 @@ function drawEnvironment() {
     // draw deaths
     for (var i = 0; i < gameArea.deaths.length; i++)
     {
-    	var deathSize = 3;
+    	var deathSize = 5;
     	var death = gameArea.deaths[i];
     	ctx = gameArea.ctx;
+    	ctx.lineWidth = 2;
         ctx.strokeStyle = gameArea.colors.deaths;
         ctx.beginPath();
         ctx.moveTo(death.x + deathSize, death.y + deathSize);
@@ -267,11 +274,62 @@ function updateGameArea(coordinates) {
         makeTitlePage();
     }
 
-    // if key is pressed, update the position of the player
-    if (gameArea.keys && gameArea.keys[87]) {if (checkWallCollision("y", -1, gameArea.level)) {lazuli.y -= lazuli.speed}};
-    if (gameArea.keys && gameArea.keys[65]) {if (checkWallCollision("x", -1, gameArea.level)) {lazuli.x -= lazuli.speed}};
-    if (gameArea.keys && gameArea.keys[83]) {if (checkWallCollision("y", 1, gameArea.level)) {lazuli.y += lazuli.speed}};
-    if (gameArea.keys && gameArea.keys[68]) {if (checkWallCollision("x", 1, gameArea.level)) {lazuli.x += lazuli.speed}};
+	// blink
+    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) 
+    {
+    	var blinkDist = 100;
+    	var blinkCooldown = 100;
+    	var x = 0;
+    	var y = 0;
+    	
+    	// get direction
+    	if (gameArea.keys && gameArea.keys[87]) y -= 1;
+		if (gameArea.keys && gameArea.keys[65]) x -= 1;
+		if (gameArea.keys && gameArea.keys[83]) y += 1;
+		if (gameArea.keys && gameArea.keys[68]) x += 1;
+ 
+ 		var direction = (new THREE.Vector2(x, y)).normalize();
+ 		gameArea.cooldowns[0] = blinkCooldown;
+ 		
+ 		var numWalls = 0;
+ 		var lastWall = [-1, -1];
+		var lastValid = new THREE.Vector2(lazuli.x, lazuli.y);
+		for (var i = 1; i < blinkDist+1; i++)
+		{
+			var collided = checkWallCollision((new THREE.Vector2(lazuli.x + direction.x * i, lazuli.y + direction.y * i)), gameArea.level);
+			if (collided[0] >= 0 && (lastWall[0] != collided[0] || lastWall[1] != collided[1]))
+			{
+				lastWall = collided;
+				numWalls++;
+			}
+			
+			// can't pass through one wall
+			if (numWalls % 2 === 0 && collided < 0)
+			{
+				lastValid.x = lazuli.x + direction.x * i;
+				lastValid.y = lazuli.y + direction.y * i;
+			}
+		}
+		
+		lazuli.x = lastValid.x;
+		lazuli.y = lastValid.y;
+    }
+    else
+    {
+		// if key is pressed, update the position of the player
+		if (gameArea.keys && gameArea.keys[87]) {if (checkWallCollision((new THREE.Vector2(lazuli.x, lazuli.y - lazuli.speed)), gameArea.level) === -1) {lazuli.y -= lazuli.speed}};
+		if (gameArea.keys && gameArea.keys[65]) {if (checkWallCollision((new THREE.Vector2(lazuli.x - lazuli.speed, lazuli.y)), gameArea.level) === -1) {lazuli.x -= lazuli.speed}};
+		if (gameArea.keys && gameArea.keys[83]) {if (checkWallCollision((new THREE.Vector2(lazuli.x, lazuli.y + lazuli.speed)), gameArea.level) === -1) {lazuli.y += lazuli.speed}};
+		if (gameArea.keys && gameArea.keys[68]) {if (checkWallCollision((new THREE.Vector2(lazuli.x + lazuli.speed, lazuli.y)), gameArea.level) === -1) {lazuli.x += lazuli.speed}};
+    }
+    
+    // lower cooldowns by 1 time
+    for (var i = 0; i < gameArea.cooldowns.length; i++)
+    {
+    	var decrease = lazuli.speed / 2;
+    	gameArea.cooldowns[i] -= decrease; 
+    }
+
 
     lazuli.update();
 
