@@ -260,6 +260,42 @@ function reachExit() {
 
 }
 
+function blink() {
+    var blinkDist = 100;
+    var blinkCooldown = 100;
+    var x = 0;
+    var y = 0;
+        
+    // get direction
+    if (gameArea.keys && gameArea.keys[87]) y -= 1;
+    if (gameArea.keys && gameArea.keys[65]) x -= 1;
+    if (gameArea.keys && gameArea.keys[83]) y += 1;
+    if (gameArea.keys && gameArea.keys[68]) x += 1;
+ 
+    var direction = (new THREE.Vector2(x, y)).normalize();
+    gameArea.cooldowns[0] = blinkCooldown;
+        
+    var numWalls = 0;
+    var lastWall = [-1, -1];
+    var lastValid = new THREE.Vector2(lazuli.x, lazuli.y);
+    for (var i = 1; i < blinkDist+1; i++) {
+        var collided = checkWallCollision((new THREE.Vector2(lazuli.x + direction.x * i, lazuli.y + direction.y * i)), gameArea.level);
+        if (collided[0] >= 0 && (lastWall[0] != collided[0] || lastWall[1] != collided[1])) {
+            lastWall = collided;
+            numWalls++;
+        }
+            
+        // can't pass through one wall -- parity check to see if blinkable
+        if (numWalls % 2 === 0 && collided < 0) {
+            lastValid.x = lazuli.x + direction.x * i;
+            lastValid.y = lazuli.y + direction.y * i;
+        }
+    }
+        
+    lazuli.x = lastValid.x;
+    lazuli.y = lastValid.y;
+}
+
 // update everything necessary
 function updateGameArea(coordinates) {
     gameArea.clear();
@@ -274,45 +310,10 @@ function updateGameArea(coordinates) {
         makeTitlePage();
     }
 
-	// blink
+	// blink feature //
     if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) 
     {
-    	var blinkDist = 100;
-    	var blinkCooldown = 100;
-    	var x = 0;
-    	var y = 0;
-    	
-    	// get direction
-    	if (gameArea.keys && gameArea.keys[87]) y -= 1;
-		if (gameArea.keys && gameArea.keys[65]) x -= 1;
-		if (gameArea.keys && gameArea.keys[83]) y += 1;
-		if (gameArea.keys && gameArea.keys[68]) x += 1;
- 
- 		var direction = (new THREE.Vector2(x, y)).normalize();
- 		gameArea.cooldowns[0] = blinkCooldown;
- 		
- 		var numWalls = 0;
- 		var lastWall = [-1, -1];
-		var lastValid = new THREE.Vector2(lazuli.x, lazuli.y);
-		for (var i = 1; i < blinkDist+1; i++)
-		{
-			var collided = checkWallCollision((new THREE.Vector2(lazuli.x + direction.x * i, lazuli.y + direction.y * i)), gameArea.level);
-			if (collided[0] >= 0 && (lastWall[0] != collided[0] || lastWall[1] != collided[1]))
-			{
-				lastWall = collided;
-				numWalls++;
-			}
-			
-			// can't pass through one wall
-			if (numWalls % 2 === 0 && collided < 0)
-			{
-				lastValid.x = lazuli.x + direction.x * i;
-				lastValid.y = lazuli.y + direction.y * i;
-			}
-		}
-		
-		lazuli.x = lastValid.x;
-		lazuli.y = lastValid.y;
+    	blink();
     }
     else
     {
