@@ -194,11 +194,11 @@ function makeCreditsPage() {
 
     // write in all other text
     ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
-    ctx.fillText("You have ascended all levels of insanity!", canvas.width/2, 140);
+    ctx.fillText("You have successfully ascended all levels of insanity!", canvas.width/2, 140);
     ctx.fillText("Created By", canvas.width/2, 240);
     ctx.fillText("Daniel Chae, Annie Chen, & Tom Colen", canvas.width/2, 270);
-    ctx.fillText("Special thanks to Professor Finkelstein & COS426 peers!", canvas.width/2, 400);
-    ctx.fillText("Return to Home >>>", canvas.width/2+100, 600);
+    ctx.fillText("Special thanks to Professor Finkelstein & COS426 peers!", canvas.width/2, 450);
+    ctx.fillText("Return to Home >>>", 420, 600);
 }
 
 // draw all the guards
@@ -267,7 +267,7 @@ function updateGameArea(coordinates) {
         makeTitlePage();
     }
     // draw in the credits page if on last map
-    else if (gameArea.level === 1) {
+    else if (gameArea.level === data.length-1) {
         makeCreditsPage();
     }
 
