@@ -178,7 +178,7 @@ function drawGuards() {
         gameArea.guards[i].move();
 
         if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls)) {
-            console.log("CAUGHT!");
+            lazuli = new component(data[gameArea.level].start[0]);
         }
     }
 }
@@ -200,7 +200,11 @@ function reachExit() {
         lazuli = new component(newData.start[0]); // player position reset
         gameArea.exit = newData.exit[0]; // reset the exit
 
-        // reset list of guards
+        // select a convolution from the list randomly
+        var convIndex = parseInt(Math.random()*newData.conv.length, 10);
+        gameArea.convList = newData.conv[convIndex];
+
+        // reset list of guards, based on convList
         gameArea.guards = [];
         for (var i = 0; i < newData.guards.length; i++) {
             var patrol = [];
@@ -210,7 +214,7 @@ function reachExit() {
             }
             var speed = 2;
             if (gameArea.convList.length > 0) speed = 2 + gameArea.convList.length*2.5;
-            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, 100);
+            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, Math.round(200/speed));
             gameArea.guards.push(guard);
         }
 
