@@ -38,7 +38,7 @@ var gameArea = {
     level: 0,
 
     // decide which convolution to apply
-    convList: [5],
+    convList: [],
 
     // start off and draw for every 10 milliseconds
     start : function() {
@@ -177,8 +177,8 @@ function drawGuards() {
         gameArea.guards[i].show(gameArea.ctx, walls);
         gameArea.guards[i].move();
 
-        if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls)) {
-            console.log("CAUGHT!");
+        if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y),  walls)) {
+            lazuli = new component(data[gameArea.level].start[0]);
         }
     }
 }

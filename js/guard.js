@@ -2,6 +2,7 @@ const size = 10;
 const color = "red";
 const visionColor = "yellow";
 const nrays = 10;
+const radius = 10;
 class Guard
 {
 	/*
@@ -244,7 +245,8 @@ class Guard
 		var straight = (new THREE.Vector2()).copy(this.sightDirection).multiplyScalar(this.sightRange);
    		var up = this.rotateAround(straight, this.location, this.sightRange/2);
 		var down = this.rotateAround(straight, this.location, -this.sightRange/2);
-		if (!this.PointInTriangle(p, this.location, up, down)) return false;
+		if ((new THREE.Vector2()).subVectors(p, this.location).length() <= radius + size) return true;
+		else if (!this.PointInTriangle(p, this.location, up, down)) return false;
 		else return this.CollidedWithWall(p, this.location, walls) == null;
 	}
 }
