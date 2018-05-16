@@ -177,7 +177,8 @@ function drawGuards() {
         gameArea.guards[i].show(gameArea.ctx, walls);
         gameArea.guards[i].move();
 
-        if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y), walls)) {
+
+        if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y),  walls)) {
             lazuli = new component(data[gameArea.level].start[0]);
         }
     }

@@ -66,6 +66,10 @@ $(document).ready(function(){
         $('#textbox').val(data);
     });
 
+    $('#upload').click(function(){
+        objs = JSON.parse($('#textbox').val());
+    });
+
     function deactivate(type)
     {
         active = false;
