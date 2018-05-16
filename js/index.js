@@ -22,7 +22,8 @@ var gameArea = {
         "start": "blue",
         "exit": "brown",
         "walls": "#ffd27f",
-        "guards": "red"
+        "guards": "red",
+        "deaths": "black"
     },
 
     // define where the exit is
@@ -33,6 +34,8 @@ var gameArea = {
 
     // a list of guards
     guards: [],
+    
+    deaths: [],
 
     // keep track of what level we are on, start off level 0
     level: 0,
@@ -121,6 +124,26 @@ function drawEnvironment() {
     // fill in the walls
     ctx.fillStyle = gameArea.colors.walls;
     ctx.fill();
+    
+    // draw deaths
+    for (var i = 0; i < gameArea.deaths.length; i++)
+    {
+    	var deathSize = 3;
+    	var death = gameArea.deaths[i];
+    	ctx = gameArea.ctx;
+        ctx.strokeStyle = gameArea.colors.deaths;
+        ctx.beginPath();
+        ctx.moveTo(death.x + deathSize, death.y + deathSize);
+        ctx.lineTo(death.x - deathSize, death.y - deathSize);
+        ctx.closePath();
+        ctx.stroke();
+        
+    	ctx.beginPath();
+        ctx.moveTo(death.x - deathSize, death.y + deathSize);
+        ctx.lineTo(death.x + deathSize, death.y - deathSize);
+        ctx.closePath();
+        ctx.stroke();
+	}
 
     /*=====================Draw the exit======================*/
     ctx.fillStyle = gameArea.colors.exit;
@@ -179,6 +202,7 @@ function drawGuards() {
 
 
         if (gameArea.guards[i].caught(new THREE.Vector2(lazuli.x, lazuli.y),  walls)) {
+        	gameArea.deaths.push(new THREE.Vector2(lazuli.x, lazuli.y));
             lazuli = new component(data[gameArea.level].start[0]);
         }
     }
@@ -218,6 +242,9 @@ function reachExit() {
             var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, Math.round(200/speed));
             gameArea.guards.push(guard);
         }
+        
+        // reset list of deaths
+        gameArea.deaths = [];
 
         gameArea.clear();
         drawEnvironment();
