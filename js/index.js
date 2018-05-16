@@ -245,7 +245,8 @@ function reachExit() {
                 patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
             }
             var speed = 2;
-            if (gameArea.convList.length > 0) speed = 2 + gameArea.convList.length*2.5;
+            if (gameArea.convList.length > 0 && gameArea.convList.length > 0) 
+                speed = 2 + gameArea.convList.length*2.5 + 0.05*newData.guards.length;
             var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, Math.round(200/speed));
             gameArea.guards.push(guard);
         }
@@ -281,7 +282,8 @@ function updateGameArea(coordinates) {
 
     // change the speed based on the map
     lazuli.speed = 2;
-    if (gameArea.convList.length > 0) lazuli.speed = 2 + gameArea.convList.length*2.5;
+    if (gameArea.convList.length > 0 && gameArea.convList.length > 0) 
+        lazuli.speed = 2 + gameArea.convList.length*2.5 + 0.05*data[gameArea.level].guards.length;
 
     // apply convolution(s) to the canvas map
     imageData = gameArea.ctx.getImageData(0, 0, gameArea.canvas.width, gameArea.canvas.height);
