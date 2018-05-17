@@ -639,7 +639,7 @@ function updateGameArea(coordinates) {
     }
 
 	// blink feature //
-    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0 && gameArea.level >= 7) {
+    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) {
     	blink();
     }
     else
