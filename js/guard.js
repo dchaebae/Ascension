@@ -129,7 +129,7 @@ class Guard
 	// 0 --> p, q and r are colinear
 	// 1 --> Clockwise
 	// 2 --> Counterclockwise
-	orientation(p, q, r)
+	static orientation(p, q, r)
 	{
 	    var val = (q.y - p.y) * (r.x - q.x) -
 	              (q.x - p.x) * (r.y - q.y);
@@ -277,5 +277,11 @@ class Guard
 	stun(duration)
 	{
 		this.stunned = duration;
+	}
+
+	slow(num)
+	{
+		this.walkSpeed = 2 + 2.5 * num;
+		this.waitTime = 200 / this.walkSpeed;
 	}
 }

@@ -16,7 +16,7 @@ $(document).ready(function(){
         "exit": 1,
         "walls": Infinity,
         "guards": Infinity,
-	"vents": 4,
+	"vents": 3,
 	"switch": 1
     };
     // max number of objects of that type
