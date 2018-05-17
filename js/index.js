@@ -168,7 +168,7 @@ function drawEnvironment() {
     ctx.fillRect(gameArea.exit[0], gameArea.exit[1], gameArea.exitSize, gameArea.exitSize);
 	
     // draw the light switch if necessary:
-    if(gameArea.lights.length > 0)
+    if(gameArea.lights && gameArea.lights.length > 0)
     {
 	ctx.fillStyle = gameArea.colors.lights;
     	ctx.fillRect(gameArea.lights[0], gameArea.lights[1], gameArea.lightSize, gameArea.lightSize);
@@ -298,6 +298,29 @@ function drawGuards() {
             lazuli = new component(data[gameArea.level].start[0]);
         }
     }
+}
+
+function checkVents()
+{
+	/*for(var i = 0; i < gameArea.vents.length; i++)
+	{
+		var vent = gameArea.vents[i];
+		var p = new THREE.Vector2(vent[0][0], vent[0][1]);
+		var q = new THREE.Vector2(vent[1][0], vent[1][1]);
+		var r = new THREE.Vector3(lazuli.x, lazuli.y);
+		var d = (new Vector2()).subVectors(q, p);
+		var f = (new Vector2()).subVectors(p, c);
+		
+		var rad = 10;
+
+		var a = d.dot(d);
+		var b = 2 * f.dot(d);
+		var c = f.dot(f) - rad * rad;
+		
+		var disc = b * b - 4 * a * c;
+		if (disc >= 0)
+		
+	}*/
 }
 
 // turn on the lights
@@ -437,6 +460,8 @@ function updateGameArea(coordinates) {
 		if (gameArea.keys && gameArea.keys[83]) {if (checkWallCollision((new THREE.Vector2(lazuli.x, lazuli.y + lazuli.speed)), gameArea.level) === -1) {lazuli.y += lazuli.speed}};
 		if (gameArea.keys && gameArea.keys[68]) {if (checkWallCollision((new THREE.Vector2(lazuli.x + lazuli.speed, lazuli.y)), gameArea.level) === -1) {lazuli.x += lazuli.speed}};
     }
+
+    checkVents();
     
     // lower cooldowns by 1 time
     for (var i = 0; i < gameArea.cooldowns.length; i++)
@@ -473,5 +498,5 @@ function updateGameArea(coordinates) {
     gameArea.ctx.putImageData(newImage, 0, 0);
 
     reachExit(); // check if player is at the exit
-    turnOnLights(); // check if player is on light switch
+    if (gameArea.lights && gameArea.lights.length > 0) turnOnLights(); // check if player is on light switch
 }
