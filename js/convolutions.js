@@ -254,7 +254,7 @@ function applyConvolutions(image, convList, imageCopy, player) {
   	if (num === 4)
   		newImage = rotateCanvas(newImage, imageCopy, Math.PI*3/2.);
   	if (num === 5)
-  		newImage = swirlCanvas(newImage, imageCopy, Math.PI*1/2.);
+  		newImage = swirlCanvas(newImage, imageCopy, Math.PI*3/4.);
   	if (num === 6)
   		newImage = brightCanvas(newImage);
   	if (num === 7)
