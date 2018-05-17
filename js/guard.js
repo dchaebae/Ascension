@@ -129,7 +129,7 @@ class Guard
 	// 0 --> p, q and r are colinear
 	// 1 --> Clockwise
 	// 2 --> Counterclockwise
-	static orientation(p, q, r)
+	orientation(p, q, r)
 	{
 	    var val = (q.y - p.y) * (r.x - q.x) -
 	              (q.x - p.x) * (r.y - q.y);
