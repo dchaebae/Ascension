@@ -327,6 +327,16 @@ function makeStunPage() {
     ctx.fillText("Beware of cooldown (available when nearest guard orange)!", canvas.width/2, 250);
 }
 
+function makeLightSwitchPage() {
+    var ctx = gameArea.ctx;
+    var canvas = gameArea.canvas;
+
+    ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = "red";
+    ctx.textAlign = "center";
+    ctx.fillText("Find the light switch!", canvas.width/2, canvas.height/2);
+}
+
 // find the closest guard to the player within the stunRange
 function findClosest() {
     var stunRange = 150; // stun range
@@ -527,6 +537,10 @@ function updateGameArea(coordinates) {
     // draw in the help page for stunning, unlocks after 3rd official map
     else if (gameArea.level === 4) {
         makeStunPage();
+    }
+    // tell player to find the light switch!
+    else if (gameArea.level === 5) {
+        makeLightSwitchPage();
     }
     // draw in the help page for blinking, unlocks after 5th official map
     else if (gameArea.level === 7) {
