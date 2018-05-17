@@ -24,7 +24,9 @@ var gameArea = {
         "exit": "brown",
         "walls": "#ffd27f",
         "guards": "red",
-        "deaths": "black"
+        "deaths": "black",
+	"lights": "yellow",
+	"vents": "purple"
     },
 
     // define where the exit is
@@ -41,6 +43,15 @@ var gameArea = {
     
     // a list of cooldowns: 0 -> blink, 1 -> stun
     cooldowns: [0, 0],
+
+    // where the light switch is
+    lights: [],
+
+    // how large the light switch is:
+    lightSize: 25,
+
+    // vents
+    vents: [],
 
     // keep track of what level we are on, start off level 0
     level: 0,
@@ -155,6 +166,26 @@ function drawEnvironment() {
     /*=====================Draw the exit======================*/
     ctx.fillStyle = gameArea.colors.exit;
     ctx.fillRect(gameArea.exit[0], gameArea.exit[1], gameArea.exitSize, gameArea.exitSize);
+	
+    // draw the light switch if necessary:
+    if(gameArea.lights.length > 0)
+    {
+	ctx.fillStyle = gameArea.colors.lights;
+    	ctx.fillRect(gameArea.lights[0], gameArea.lights[1], gameArea.lightSize, gameArea.lightSize);
+    }
+
+    // draw the vents
+    for (var i = 0; i < gameArea.vents.length; i++)
+    {
+	var vent = gameArea.vents[i];
+	ctx.lineWidth = 4;
+	ctx.strokeStyle = gameArea.colors.vents;
+	ctx.beginPath();
+	ctx.moveTo(vent[0][0], vent[0][1]);
+	ctx.lineTo(vent[1][0], vent[1][1]);
+	ctx.closePath();
+	ctx.stroke();
+    }
 }
 
 // makes all the canvas texts on title page
@@ -269,6 +300,33 @@ function drawGuards() {
     }
 }
 
+// turn on the lights
+function turnOnLights()
+{
+	var x = lazuli.x;
+    	var y = lazuli.y;
+    	var xBound = gameArea.lights[0];
+    	var yBound = gameArea.lights[1];
+	if (x >= xBound && x <= xBound+gameArea.exitSize && y >= yBound && y <= yBound+gameArea.exitSize)
+	{
+
+		var i = gameArea.convList.indexOf(8);
+		if (i > -1)
+		{
+			gameArea.convList.splice(i, 1);
+			for(var j = 0; j < gameArea.guards.length; j++) gameArea.guards[j].slow(gameArea.convList.length);
+		}
+
+		var i = gameArea.convList.indexOf(9);
+		if (i > -1)
+		{
+			gameArea.convList.splice(i, 1);
+			for(var j = 0; j < gameArea.guards.length; j++) gameArea.guards[j].slow(gameArea.convList.length);
+		}
+
+	}
+}
+
 // handle when the player reaches the exit
 function reachExit() {
     var x = lazuli.x;
@@ -285,6 +343,8 @@ function reachExit() {
         var newData = data[gameArea.level];
         lazuli = new component(newData.start[0]); // player position reset
         gameArea.exit = newData.exit[0]; // reset the exit
+	if(newData.switch) gameArea.lights = newData.switch[0]; // reset the lights
+	if(newData.vents) gameArea.vents = newData.vents;
 
         // select a convolution from the list randomly
         var convIndex = parseInt(Math.random()*newData.conv.length, 10);
@@ -315,42 +375,6 @@ function reachExit() {
 
 }
 
-function blink() {
-    var blinkDist = 100;
-    var blinkCooldown = 100;
-    var x = 0;
-    var y = 0;
-        
-    // get direction
-    if (gameArea.keys && gameArea.keys[87]) y -= 1;
-    if (gameArea.keys && gameArea.keys[65]) x -= 1;
-    if (gameArea.keys && gameArea.keys[83]) y += 1;
-    if (gameArea.keys && gameArea.keys[68]) x += 1;
- 
-    var direction = (new THREE.Vector2(x, y)).normalize();
-    gameArea.cooldowns[0] = blinkCooldown;
-        
-    var numWalls = 0;
-    var lastWall = [-1, -1];
-    var lastValid = new THREE.Vector2(lazuli.x, lazuli.y);
-    for (var i = 1; i < blinkDist+1; i++) {
-        var collided = checkWallCollision((new THREE.Vector2(lazuli.x + direction.x * i, lazuli.y + direction.y * i)), gameArea.level);
-        if (collided[0] >= 0 && (lastWall[0] != collided[0] || lastWall[1] != collided[1])) {
-            lastWall = collided;
-            numWalls++;
-        }
-            
-        // can't pass through one wall -- parity check to see if blinkable
-        if (numWalls % 2 === 0 && collided < 0) {
-            lastValid.x = lazuli.x + direction.x * i;
-            lastValid.y = lazuli.y + direction.y * i;
-        }
-    }
-        
-    lazuli.x = lastValid.x;
-    lazuli.y = lastValid.y;
-}
-
 // update everything necessary
 function updateGameArea(coordinates) {
     gameArea.clear();
@@ -365,10 +389,45 @@ function updateGameArea(coordinates) {
         makeCreditsPage();
     }
 
-	// blink feature //
+	// blink
     if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) 
     {
-    	blink();
+    	var blinkDist = 100;
+    	var blinkCooldown = 100;
+    	var x = 0;
+    	var y = 0;
+    	
+    	// get direction
+    	if (gameArea.keys && gameArea.keys[87]) y -= 1;
+		if (gameArea.keys && gameArea.keys[65]) x -= 1;
+		if (gameArea.keys && gameArea.keys[83]) y += 1;
+		if (gameArea.keys && gameArea.keys[68]) x += 1;
+ 
+ 		var direction = (new THREE.Vector2(x, y)).normalize();
+ 		gameArea.cooldowns[0] = blinkCooldown;
+ 		
+ 		var numWalls = 0;
+ 		var lastWall = [-1, -1];
+		var lastValid = new THREE.Vector2(lazuli.x, lazuli.y);
+		for (var i = 1; i < blinkDist+1; i++)
+		{
+			var collided = checkWallCollision((new THREE.Vector2(lazuli.x + direction.x * i, lazuli.y + direction.y * i)), gameArea.level);
+			if (collided[0] >= 0 && (lastWall[0] != collided[0] || lastWall[1] != collided[1]))
+			{
+				lastWall = collided;
+				numWalls++;
+			}
+			
+			// can't pass through one wall
+			if (numWalls % 2 === 0 && collided < 0)
+			{
+				lastValid.x = lazuli.x + direction.x * i;
+				lastValid.y = lazuli.y + direction.y * i;
+			}
+		}
+		
+		lazuli.x = lastValid.x;
+		lazuli.y = lastValid.y;
     }
     else
     {
@@ -414,4 +473,5 @@ function updateGameArea(coordinates) {
     gameArea.ctx.putImageData(newImage, 0, 0);
 
     reachExit(); // check if player is at the exit
+    turnOnLights(); // check if player is on light switch
 }

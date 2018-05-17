@@ -278,4 +278,10 @@ class Guard
 	{
 		this.stunned = duration;
 	}
+
+	slow(num)
+	{
+		this.walkSpeed = 2 + 2.5 * num;
+		this.waitTime = 200 / this.walkSpeed;
+	}
 }
