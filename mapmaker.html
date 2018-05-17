@@ -13,12 +13,14 @@
     <div class = "col">
         <canvas id="canvas" width="640px" height="640px"></canvas>
     </div>
-    <div class = "row">
+    <dv class = "row">
         <select id = "type">
             <option value = "start">Starting Position</option>
             <option value = "exit">Exit</option>
             <option value = "walls">Wall</option>
             <option value = "guards">Guard</option>
+	    <option value = "vents">Vents</option>
+	    <option value = "switch">Switch</option>
         </select>
         <br><br><br>
         <button type = "button" id = "clear">Clear</button>
@@ -35,17 +37,13 @@
         <button type = "button" id = "upload"> Upload </button>
         <script>
         document.getElementById("myForm").onsubmit = function() {download(this['name'].value, this['text'].value)};
-
         function download(filename, text) {
           var element = document.createElement('a');
           element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
           element.setAttribute('download', filename);
-
           element.style.display = 'none';
           document.body.appendChild(element);
-
           element.click();
-
           document.body.removeChild(element);
         }
         </script>
@@ -53,3 +51,11 @@
 </div>
 </body>
 </html>
+
+
+
+
+
+
+
+

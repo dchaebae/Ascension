@@ -48,6 +48,8 @@ var gameArea = {
     // decide which convolution to apply
     convList: [],
 
+    gameSpeed: 2,
+
     // start off and draw for every 10 milliseconds
     start : function() {
         var dataDef = data[0];
@@ -231,6 +233,7 @@ function makeCreditsPage() {
     ctx.fillText("Return to Home >>>", 420, 600);
 }
 
+// write in text for blink page
 function makeBlinkPage() {
     var ctx = gameArea.ctx;
     var canvas = gameArea.canvas;
@@ -255,17 +258,72 @@ function makeBlinkPage() {
     // write in all other text
     ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
     ctx.fillStyle = "green";
-    ctx.fillText("You may now <Blink>.", 160, 200);
-    ctx.fillText("Press P while walking to <Blink>", 160, 260);
-    ctx.fillText("in that direction.", 160, 285);
-    ctx.fillText("Beware of cooldown (available when green)!", canvas.width/2, 600);
+    ctx.fillText("You may now <Blink>", 160, 200);
+    ctx.fillText("<Blink> teleports to a distance", 160, 240);
+    ctx.fillText("Press 'P' while walking to <Blink>", 160, 300);
+    ctx.fillText("in that direction.", 160, 325);
+    ctx.fillText("Beware of cooldown (available when green)!", 370, 600);
+}
+
+// write in text for stun page
+function makeStunPage() {
+    var ctx = gameArea.ctx;
+    var canvas = gameArea.canvas;
+    
+    // make a gradient for the title
+    var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    gradient.addColorStop(0, 'red');
+    gradient.addColorStop(0.35, 'red');
+    gradient.addColorStop(0.65, 'yellow');
+    gradient.addColorStop(0.7, 'red');
+    gradient.addColorStop(1, 'yellow');
+    ctx.font = "2.8vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = gradient;
+    ctx.textAlign = "center";
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 2;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+
+    ctx.fillText("New Ability Unlocked!", canvas.width/2, 80);
+
+    // write in all other text
+    ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = "#EE7600";
+    ctx.fillText("You may now <Stun>", canvas.width/2, 140);
+    ctx.fillText("<Stun> temporarily disables a guard", canvas.width/2, 180);
+    ctx.fillText("Press 'O' while near a guard to <Stun> that guard", canvas.width/2, 220);
+    ctx.fillText("Beware of cooldown (available when nearest guard orange)!", canvas.width/2, 250);
+}
+
+// find the closest guard to the player within the stunRange
+function findClosest() {
+    var stunRange = 150; // stun range
+    var closestDist = stunRange;
+    var closestGuard = -1;
+    var position = new THREE.Vector2(lazuli.x, lazuli.y);
+    // find the closest guard to the player
+    for(var i = 0; i < gameArea.guards.length; i++) {
+    	var dist = (new THREE.Vector2()).subVectors(position, gameArea.guards[i].location).length();
+    	if (dist <= closestDist) {
+    		closestDist = dist;
+    		closestGuard = i;
+    	}
+    }
+    return closestGuard;
 }
 
 // draw all the guards
 function drawGuards() {
-    var walls = data[gameArea.level].walls;
+    var walls = data[gameArea.level].walls;    
+    
+    // activate stun after level 3
+	if (gameArea.level > 3) {
+        var closestGuard = findClosest();
+    }
+
     for (var i = 0; i < gameArea.guards.length; i++) {
-        gameArea.guards[i].show(gameArea.ctx, walls);
+        gameArea.guards[i].show(gameArea.ctx, walls, i === closestGuard && gameArea.cooldowns[1] <= 0);
         gameArea.guards[i].move();
 
 
@@ -305,10 +363,10 @@ function reachExit() {
             for (var j = 0; j < patrolPosList.length; j++) {
                 patrol.push(new THREE.Vector2(patrolPosList[j][0], patrolPosList[j][1]));
             }
-            var speed = 2;
+            gameArea.gameSpeed = 2;
             if (gameArea.convList.length > 0 && gameArea.convList.length > 0) 
-                speed = 2 + gameArea.convList.length*2.5 + 0.05*newData.guards.length;
-            var guard = new Guard(patrol, speed, 100, 1, Math.PI/2, Math.round(200/speed));
+                gameArea.gameSpeed = 2 + gameArea.convList.length*2.5 + 0.05*newData.guards.length;
+            var guard = new Guard(patrol, gameArea.gameSpeed, 100, 1, Math.PI/2, Math.round(200/gameArea.gameSpeed));
             gameArea.guards.push(guard);
         }
         
@@ -322,6 +380,7 @@ function reachExit() {
 
 }
 
+// blink to a location in the direction of the movement
 function blink() {
     var blinkDist = 100;
     var blinkCooldown = 100;
@@ -358,6 +417,21 @@ function blink() {
     lazuli.y = lastValid.y;
 }
 
+// stun the nearest guard
+function stunGuard() {
+    var stunDuration = Math.round(250/gameArea.gameSpeed);
+    var stunCooldown = 800;
+    if (gameArea.keys && gameArea.keys[79] && gameArea.cooldowns[1] <= 0)
+    {
+        var g = findClosest();
+        if (g >= 0)
+        {
+            gameArea.guards[g].stun(stunDuration);
+            gameArea.cooldowns[1] = stunCooldown;
+        }
+    }
+}
+
 // update everything necessary
 function updateGameArea(coordinates) {
     gameArea.clear();
@@ -367,8 +441,12 @@ function updateGameArea(coordinates) {
     if (gameArea.level === 0) {
         makeTitlePage();
     }
-    // draw in the help page for blinking, unlocks at level 6
-    else if (gameArea.level === 6) {
+    // draw in the help page for stunning, unlocks after 3rd official map
+    else if (gameArea.level === 4) {
+        makeStunPage();
+    }
+    // draw in the help page for blinking, unlocks after 5th official map
+    else if (gameArea.level === 7) {
         makeBlinkPage();
     }
     // draw in the credits page if on last map
@@ -396,7 +474,11 @@ function updateGameArea(coordinates) {
     	gameArea.cooldowns[i] -= decrease; 
     }
 
+    // stun a guard only after level 3 (introduction to it starts map 4)
+    if (gameArea.level > 3)
+        stunGuard();
 
+    // update the physical location of lazuli
     lazuli.update();
 
     // change the speed based on the map

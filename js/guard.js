@@ -1,6 +1,8 @@
 const size = 10;
 const color = "red";
+const stunColor = "black";
 const visionColor = "yellow";
+const closestColor = "orange";
 const nrays = 10;
 const radius = 10;
 class Guard
@@ -18,10 +20,11 @@ class Guard
 		int rotation
 		int waitTime
 		int currWait
+		int stunned
 	*/
 	constructor(patrol, walkSpeed, sightRange, sightWidth, rotation, waitTime)
 	{
-		this.location = (new THREE.Vector2()).copy(patrol[0]);
+		this.locate = (new THREE.Vector2()).copy(patrol[0]);
 		this.patrol = patrol;
 		this.walkDirection = (patrol.length > 1) ? (new THREE.Vector2()).subVectors(patrol[1], patrol[0]).normalize() : new THREE.Vector2();
 		this.dest = (patrol.length > 1) ? 1 : 0;
@@ -34,12 +37,23 @@ class Guard
 		this.currWait = 0;
 		this.step1;
 		this.step2;
+		this.stunned = 0;
+	}
+
+	get location()
+	{
+		return this.locate;
+	}
+
+	set location(val)
+	{
+		this.locate = val;
 	}
 
 	move()
 	{
 		var distance = (new THREE.Vector2()).subVectors(this.patrol[this.dest], this.location).length();
-		if (this.currWait === 0)
+		if (this.currWait === 0 && this.stunned === 0)
 		{
 			if (distance < this.walkSpeed)
 			{
@@ -56,6 +70,10 @@ class Guard
 			{
 				this.location.add((new THREE.Vector2()).copy(this.walkDirection).multiplyScalar(this.walkSpeed));
 			}			
+		}
+		else if (this.stunned > 0)
+		{
+			this.stunned = this.stunned - 1;
 		}
 		else if (this.currWait === 1)
 		{
@@ -213,40 +231,51 @@ class Guard
 		return points;
 	}
 
-	show(ctx, walls)
+	show(ctx, walls, closest)
 	{
 		var locate = (new THREE.Vector2().copy(this.location));
-		// draw his vision
-   		ctx.beginPath();
-   		ctx.fillStyle = visionColor;
-   		ctx.moveTo(locate.x, locate.y);
+		if (this.stunned === 0)
+		{
 
-   		var straight = (new THREE.Vector2()).copy(this.sightDirection).multiplyScalar(this.sightRange);
-   		var up = this.rotateAround(straight, locate, this.sightRange/2);
-   		var down = this.rotateAround(straight, locate, -this.sightRange/2);
-   		var verts = this.adjustVision(locate, up, down, walls, nrays);
-   		for (var i = 0; i < nrays; i++)
-   		{
-   			ctx.lineTo(verts[i].x, verts[i].y);
-   		}
-   		ctx.closePath();
-   		ctx.fill();
+			// draw his vision
+   			ctx.beginPath();
+   			ctx.fillStyle = visionColor;
+   			ctx.moveTo(locate.x, locate.y);
 
+   			var straight = (new THREE.Vector2()).copy(this.sightDirection).multiplyScalar(this.sightRange);
+   			var up = this.rotateAround(straight, locate, this.sightRange/2);
+   			var down = this.rotateAround(straight, locate, -this.sightRange/2);
+   			var verts = this.adjustVision(locate, up, down, walls, nrays);
+   			for (var i = 0; i < nrays; i++)
+   			{
+   				ctx.lineTo(verts[i].x, verts[i].y);
+   			}
+   			ctx.closePath();
+   			ctx.fill();
+		}
 		// draw the guard
 		ctx.beginPath();
-		ctx.fillStyle = color;
-        ctx.arc(locate.x, locate.y, size, 0, Math.PI*2);
-        ctx.closePath();
-        ctx.fill();
+		if (closest) ctx.fillStyle = closestColor;
+		else if (this.stunned === 0) ctx.fillStyle = color;
+		else ctx.fillStyle = stunColor;
+        	ctx.arc(locate.x, locate.y, size, 0, Math.PI*2);
+        	ctx.closePath();
+        	ctx.fill();
 	}
 
 	caught(p, walls)
 	{
+		if (this.stunned > 0) return false;
 		var straight = (new THREE.Vector2()).copy(this.sightDirection).multiplyScalar(this.sightRange);
    		var up = this.rotateAround(straight, this.location, this.sightRange/2);
 		var down = this.rotateAround(straight, this.location, -this.sightRange/2);
 		if ((new THREE.Vector2()).subVectors(p, this.location).length() <= radius + size) return true;
 		else if (!this.PointInTriangle(p, this.location, up, down)) return false;
 		else return this.CollidedWithWall(p, this.location, walls) == null;
+	}
+
+	stun(duration)
+	{
+		this.stunned = duration;
 	}
 }

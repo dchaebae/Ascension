@@ -1,7 +1,7 @@
 'use strict';
 
 $(document).ready(function(){
-    var types = ["start", "exit", "walls", "guards"];
+    var types = ["start", "exit", "walls", "guards", "vents", "switch"];
     const dotRadius = 10;
     const stairSize = 50;
     var canvas = document.getElementById("canvas");
@@ -15,20 +15,26 @@ $(document).ready(function(){
         "start": 1,
         "exit": 1,
         "walls": Infinity,
-        "guards": Infinity
+        "guards": Infinity,
+	"vents": 4,
+	"switch": 1
     };
     // max number of objects of that type
     var omax = {
         "start": 1,
         "exit": 1,
         "walls": Infinity,
-        "guards": Infinity
+        "guards": Infinity,
+        "vents": Infinity,
+	"switch": 1
     };
     var colors = {
         "start": "blue",
         "exit": "brown",
         "walls": "black",
-        "guards": "red"
+        "guards": "red",
+	"vents": "purple",
+	"switch": "yellow"
     };
     for (var i = 0; i < types.length; i++) objs[types[i]] = [];
     var newObj = [];
@@ -102,7 +108,7 @@ $(document).ready(function(){
                 ctx.closePath();
                 ctx.fill();
             }
-            else if (type === types[1])
+            else if (type === types[1] || type === types[5])
             {
                 var thisX = currObj[0];
                 var thisY = currObj[1];
@@ -117,7 +123,7 @@ $(document).ready(function(){
                     ctx.lineTo(currObj[j][0], currObj[j][1]);
                 }
                 ctx.closePath();
-                if (type != types[3]) ctx.fill();
+                if (type === types[2]) ctx.fill();
                 else ctx.stroke();
             }
 
