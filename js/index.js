@@ -231,6 +231,36 @@ function makeCreditsPage() {
     ctx.fillText("Return to Home >>>", 420, 600);
 }
 
+function makeBlinkPage() {
+    var ctx = gameArea.ctx;
+    var canvas = gameArea.canvas;
+    
+    // make a gradient for the title
+    var gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    gradient.addColorStop(0, 'red');
+    gradient.addColorStop(0.35, 'red');
+    gradient.addColorStop(0.65, 'yellow');
+    gradient.addColorStop(0.7, 'red');
+    gradient.addColorStop(1, 'yellow');
+    ctx.font = "2.8vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = gradient;
+    ctx.textAlign = "center";
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 2;
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+
+    ctx.fillText("New Ability Unlocked!", canvas.width/2, 80);
+
+    // write in all other text
+    ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = "green";
+    ctx.fillText("You may now <Blink>.", 160, 200);
+    ctx.fillText("Press P while walking to <Blink>", 160, 260);
+    ctx.fillText("in that direction.", 160, 285);
+    ctx.fillText("Beware of cooldown (available when green)!", canvas.width/2, 600);
+}
+
 // draw all the guards
 function drawGuards() {
     var walls = data[gameArea.level].walls;
@@ -337,14 +367,17 @@ function updateGameArea(coordinates) {
     if (gameArea.level === 0) {
         makeTitlePage();
     }
+    // draw in the help page for blinking, unlocks at level 6
+    else if (gameArea.level === 6) {
+        makeBlinkPage();
+    }
     // draw in the credits page if on last map
     else if (gameArea.level === data.length-1) {
         makeCreditsPage();
     }
 
 	// blink feature //
-    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) 
-    {
+    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) {
     	blink();
     }
     else
