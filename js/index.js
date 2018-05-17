@@ -231,11 +231,34 @@ function makeCreditsPage() {
     ctx.fillText("Return to Home >>>", 420, 600);
 }
 
+// find the closest guard to the player within the stunRange
+function findClosest()
+{
+    var stunRange = 100;
+    var closestDist = stunRange;
+    var closestGuard = -1;
+    var position = new THREE.Vector2(lazuli.x, lazuli.y);
+    // find the closest guard to the player
+    for(var i = 0; i < gameArea.guards.length; i++)
+    {
+	var dist = (new THREE.Vector2()).subVectors(position, gameArea.guards[i].location).length();
+	if (dist <= closestDist)
+	{
+		closestDist = dist;
+		closestGuard = i;
+	}
+    }
+   return closestGuard;
+}
+
 // draw all the guards
 function drawGuards() {
-    var walls = data[gameArea.level].walls;
+    var walls = data[gameArea.level].walls;    
+    
+	
+    var closestGuard = findClosest();
     for (var i = 0; i < gameArea.guards.length; i++) {
-        gameArea.guards[i].show(gameArea.ctx, walls);
+        gameArea.guards[i].show(gameArea.ctx, walls, i === closestGuard && gameArea.cooldowns[1] <= 0);
         gameArea.guards[i].move();
 
 
@@ -360,6 +383,19 @@ function updateGameArea(coordinates) {
     {
     	var decrease = lazuli.speed / 2;
     	gameArea.cooldowns[i] -= decrease; 
+    }
+
+    // stab
+    var stunDuration = 100;
+    var stunCooldown = 100;
+    if (gameArea.keys && gameArea.keys[79] && gameArea.cooldowns[1] <= 0)
+    {
+	var g = findClosest();
+	if (g >= 0)
+	{
+		gameArea.guards[g].stun(stunDuration);
+		gameArea.cooldowns[1] = stunCooldown;
+	}
     }
 
 
