@@ -11,6 +11,31 @@ function startGame() {
     document.body.appendChild(title);
 
     gameArea.start();
+    displayFilters([]);
+}
+
+function displayFilters(array)
+{
+	var filters = ["", "grayscale", "rotate 90", "rotate 180", "rotate 270", "swirl", "adjust brightness", "adjust contrast", "centered vignette", "following vignette"];
+    var tbl  = document.getElementById("table");
+    if (tbl === null)
+    {
+    	tbl = document.createElement("table");
+    	tbl.setAttribute("id", "table");
+    	document.body.appendChild(tbl);
+    }
+    tbl.innerHTML = "";
+    tbl.style.width  = '100px';
+    tbl.style.border = '1px solid black';
+	var tr = tbl.insertRow();
+	var td = tr.insertCell();
+	td.appendChild(document.createTextNode('Active:'));
+	td.style.border = '1px solid black';
+	for(var j = 0; j < array.length; j++){
+		var td = tr.insertCell();
+		td.appendChild(document.createTextNode(filters[array[j]]));
+		td.style.border = '1px solid black';
+	}	
 }
 
 var gameArea = {
@@ -464,6 +489,7 @@ function reachExit() {
         // select a convolution from the list randomly
         var convIndex = parseInt(Math.random()*newData.conv.length, 10);
         gameArea.convList = newData.conv[convIndex];
+        displayFilters(gameArea.convList);
 
         // reset list of guards, based on convList
         gameArea.guards = [];
