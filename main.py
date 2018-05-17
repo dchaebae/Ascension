@@ -17,5 +17,9 @@ def send_libjs(path):
 def send_css(path):
 	return send_from_directory('css', path)
 
+@app.route('/music/<path:path>')
+def send_music(path):
+	return send_from_directory('music', path)
+
 if __name__ == "__main__":
     app.run()

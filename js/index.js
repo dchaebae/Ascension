@@ -16,7 +16,7 @@ function startGame() {
 
 function displayFilters(array)
 {
-	var filters = ["", "grayscale", "rotate 90", "rotate 180", "rotate 270", "swirl", "adjust brightness", "adjust contrast", "centered vignette", "following vignette"];
+	var filters = ["", "Grayscale", "Rotate 90", "Rotate 180", "Rotate 270", "Swirl", "Adjust brightness", "Adjust contrast", "Centered vignette", "Following vignette"];
     var tbl  = document.getElementById("table");
     if (tbl === null)
     {
@@ -27,14 +27,42 @@ function displayFilters(array)
     tbl.innerHTML = "";
     tbl.style.width  = '100px';
     tbl.style.border = '1px solid black';
+    tbl.style.position = 'relative';
+    tbl.style.marginLeft = 'auto';
+    tbl.style.marginRight = 'auto';
+    tbl.style.font = '1vw Gloria Hallelujah, cursive, Garamond';
+    tbl.style.textAlign = "center";
+    tbl.style.color = "white";
+    tbl.style.outline =  "medium solid #000000";
+    tbl.style.backgroundColor = "rgba(0,0,0,0.5)";
+    tbl.style.tableLayout = 'auto';
+
+    // title of the table
 	var tr = tbl.insertRow();
 	var td = tr.insertCell();
-	td.appendChild(document.createTextNode('Active:'));
-	td.style.border = '1px solid black';
+	td.appendChild(document.createTextNode('Active Filters:'));
+	td.style.border = '1px solid white';
+    td.style.padding = '0vw 1vw';
+    td.style.width = '100%';
+    td.style.whiteSpace = 'nowrap';
+
+    // when empty length
+    if (array.length === 0) {
+        var td = tr.insertCell();
+        td.style.border = '1px solid white';
+        td.style.width = '100%';
+        td.style.whiteSpace = 'nowrap';
+        td.style.padding = '0vw 1vw';
+        td.appendChild(document.createTextNode("None"));
+    }
+    // when there are filters
 	for(var j = 0; j < array.length; j++){
 		var td = tr.insertCell();
-		td.appendChild(document.createTextNode(filters[array[j]]));
-		td.style.border = '1px solid black';
+		td.style.border = '1px solid white';
+        td.style.width = '100%';
+        td.style.whiteSpace = 'nowrap';
+        td.style.padding = '0vw 1vw';
+        td.appendChild(document.createTextNode(filters[array[j]]));
 	}	
 }
 
@@ -611,7 +639,7 @@ function updateGameArea(coordinates) {
     }
 
 	// blink feature //
-    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0) {
+    if (gameArea.keys && gameArea.keys[80] && gameArea.cooldowns[0] <= 0 && gameArea.level >= 7) {
     	blink();
     }
     else
@@ -623,6 +651,7 @@ function updateGameArea(coordinates) {
 		if (gameArea.keys && gameArea.keys[68]) {if (checkWallCollision((new THREE.Vector2(lazuli.x + lazuli.speed, lazuli.y)), gameArea.level) === -1) {lazuli.x += lazuli.speed}};
     }
 
+    // check to see if we are in a vent
     checkVents();
     
     // lower cooldowns by 1 time
