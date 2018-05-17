@@ -375,27 +375,44 @@ function drawGuards() {
     }
 }
 
+function inVent(vent)
+{
+	var p = new THREE.Vector2(vent[0][0], vent[0][1]);
+	var q = new THREE.Vector2(vent[1][0], vent[1][1]);
+	var r = new THREE.Vector3(lazuli.x, lazuli.y);
+	var d = (new THREE.Vector2()).subVectors(q, p);
+	var f = (new THREE.Vector2()).subVectors(p, r);
+
+	var rad = 10;
+
+	var a = d.dot(d);
+	var b = 2 * f.dot(d);
+	var c = f.dot(f) - rad * rad;
+
+	var disc = b * b - 4 * a * c;
+	if (disc >= 0)
+	{
+		disc = Math.sqrt(disc);
+	
+		var t1 = (-b - disc)/(2*a);
+		var t2 = (-b + disc)/(2*a);
+		if (t1 >= 0 && t1 <= 1) return true;
+		if (t2 >= 0 && t2 <= 1) return true;
+	}
+	return false;
+}
+
 function checkVents()
 {
-	/*for(var i = 0; i < gameArea.vents.length; i++)
+	for(var i = 0; i < gameArea.vents.length; i++)
 	{
 		var vent = gameArea.vents[i];
-		var p = new THREE.Vector2(vent[0][0], vent[0][1]);
-		var q = new THREE.Vector2(vent[1][0], vent[1][1]);
-		var r = new THREE.Vector3(lazuli.x, lazuli.y);
-		var d = (new Vector2()).subVectors(q, p);
-		var f = (new Vector2()).subVectors(p, c);
-		
-		var rad = 10;
-
-		var a = d.dot(d);
-		var b = 2 * f.dot(d);
-		var c = f.dot(f) - rad * rad;
-		
-		var disc = b * b - 4 * a * c;
-		if (disc >= 0)
-		
-	}*/
+		if (inVent(vent))
+		{
+			lazuli.x = vent[2][0];
+			lazuli.y = vent[2][1];
+		}
+	}
 }
 
 // turn on the lights
