@@ -320,7 +320,7 @@ function makeStunPage() {
 
     // write in all other text
     ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
-    ctx.fillStyle = "#EE7600";
+    ctx.fillStyle = "black";
     ctx.fillText("You may now <Stun>", canvas.width/2, 140);
     ctx.fillText("<Stun> temporarily disables a guard", canvas.width/2, 180);
     ctx.fillText("Press 'O' while near a guard to <Stun> that guard", canvas.width/2, 220);
