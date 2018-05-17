@@ -352,6 +352,7 @@ function makeStunPage() {
     ctx.fillText("Beware of cooldown (available when nearest guard orange)!", canvas.width/2, 250);
 }
 
+// draw canvas text for light switch level
 function makeLightSwitchPage() {
     var ctx = gameArea.ctx;
     var canvas = gameArea.canvas;
@@ -360,6 +361,17 @@ function makeLightSwitchPage() {
     ctx.fillStyle = "red";
     ctx.textAlign = "center";
     ctx.fillText("Find the light switch!", canvas.width/2, canvas.height/2);
+}
+
+// draw canvas text for vent level
+function makeVentPage() {
+    var ctx = gameArea.ctx;
+    var canvas = gameArea.canvas;
+
+    ctx.font = "1.2vw Gloria Hallelujah, cursive, Garamond";
+    ctx.fillStyle = "purple";
+    ctx.textAlign = "center";
+    ctx.fillText("Use the vents to your advantage", canvas.width/2, canvas.height/2);
 }
 
 // find the closest guard to the player within the stunRange
@@ -588,6 +600,10 @@ function updateGameArea(coordinates) {
     // draw in the help page for blinking, unlocks after 5th official map
     else if (gameArea.level === 7) {
         makeBlinkPage();
+    }
+    // draw in help page for vents!
+    else if (gameArea.level === 10) {
+        makeVentPage();
     }
     // draw in the credits page if on last map
     else if (gameArea.level === data.length-1) {
