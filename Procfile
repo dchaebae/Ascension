@@ -1,0 +1,1 @@
+web: gunicorn Ascension.wsgi --log-file -
